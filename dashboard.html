@@ -2,257 +2,582 @@
 <html>
 <head>
     <title>Origin Admin</title>
+    <meta charset="UTF-8">
     <style>
-        body {
-            background: #0f172a;
-            color: #e5e7eb;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            margin: 0;
+        :root {
+            --bg: #020617;
+            --bg-alt: #0b1120;
+            --card: #020617;
+            --border: #1f2937;
+            --accent: #3b82f6;
+            --accent-soft: rgba(59,130,246,0.15);
+            --text: #e5e7eb;
+            --muted: #9ca3af;
+            --danger: #ef4444;
         }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: radial-gradient(circle at top, #1e293b 0, #020617 45%, #000 100%);
+            color: var(--text);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
         header {
             padding: 16px 24px;
-            background: #020617;
-            border-bottom: 1px solid #1f2937;
+            background: linear-gradient(90deg, #020617, #0b1120);
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            backdrop-filter: blur(12px);
         }
+
         header h1 {
             margin: 0;
             font-size: 20px;
+            letter-spacing: 0.04em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+
+        header h1::before {
+            content: "";
+            width: 18px;
+            height: 18px;
+            border-radius: 999px;
+            background: radial-gradient(circle, #3b82f6, #1d4ed8);
+            box-shadow: 0 0 18px rgba(59,130,246,0.7);
+        }
+
+        #statusText {
+            font-size: 13px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(15,23,42,0.8);
+            border: 1px solid rgba(148,163,184,0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        #statusDot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: #f97316;
+            box-shadow: 0 0 10px rgba(249,115,22,0.7);
+        }
+
         .container {
             padding: 24px;
             display: flex;
-            gap: 16px;
+            gap: 18px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
+
         .sidebar {
-            width: 220px;
+            width: 230px;
+            position: sticky;
+            top: 72px;
+            align-self: flex-start;
         }
+
+        .sidebar-title {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
         .sidebar button {
             width: 100%;
             padding: 10px 12px;
             margin-bottom: 8px;
-            border-radius: 8px;
-            border: none;
-            background: #1f2937;
-            color: #e5e7eb;
+            border-radius: 10px;
+            border: 1px solid rgba(31,41,55,0.9);
+            background: rgba(15,23,42,0.9);
+            color: var(--text);
             text-align: left;
             cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.18s ease-out;
         }
+
+        .sidebar button span.label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar button span.dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(148,163,184,0.7);
+        }
+
+        .sidebar button:hover {
+            border-color: rgba(59,130,246,0.7);
+            background: rgba(15,23,42,1);
+            transform: translateY(-1px);
+        }
+
         .sidebar button.active {
-            background: #3b82f6;
+            background: linear-gradient(135deg, rgba(37,99,235,0.9), rgba(59,130,246,0.9));
+            border-color: transparent;
+            box-shadow: 0 10px 25px rgba(37,99,235,0.35);
         }
+
+        .sidebar button.active span.dot {
+            background: #22c55e;
+            box-shadow: 0 0 10px rgba(34,197,94,0.7);
+        }
+
         .content {
             flex: 1;
+            min-width: 0;
         }
+
+        .section {
+            opacity: 0;
+            transform: translateY(8px);
+            pointer-events: none;
+            transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+        }
+
+        .section.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
         .card {
-            background: #020617;
-            border-radius: 12px;
-            padding: 16px 20px;
-            margin-bottom: 16px;
-            border: 1px solid #1f2937;
+            background: radial-gradient(circle at top left, rgba(30,64,175,0.35), rgba(15,23,42,0.95));
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 18px;
+            border: 1px solid rgba(31,41,55,0.9);
+            box-shadow: 0 18px 40px rgba(15,23,42,0.9);
+            position: relative;
+            overflow: hidden;
         }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: -40%;
+            background:
+                radial-gradient(circle at 0 0, rgba(59,130,246,0.12), transparent 55%),
+                radial-gradient(circle at 100% 0, rgba(34,197,94,0.08), transparent 55%);
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .card-inner {
+            position: relative;
+            z-index: 1;
+        }
+
         .card h2 {
             margin-top: 0;
             font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+
+        .card h2 span.badge {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            padding: 3px 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(148,163,184,0.5);
+            color: var(--muted);
+            background: rgba(15,23,42,0.8);
+        }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 4px;
+            margin-bottom: 12px;
+        }
+
         label {
             display: block;
             margin-top: 10px;
-            font-size: 14px;
+            font-size: 13px;
+            color: var(--muted);
         }
+
         select, input {
             margin-top: 4px;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid #374151;
-            background: #0b1120;
-            color: #e5e7eb;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(55,65,81,0.9);
+            background: rgba(15,23,42,0.95);
+            color: var(--text);
             width: 100%;
-            box-sizing: border-box;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.16s ease-out, box-shadow 0.16s ease-out, background 0.16s ease-out;
         }
+
+        select:focus, input:focus {
+            border-color: rgba(59,130,246,0.9);
+            box-shadow: 0 0 0 1px rgba(59,130,246,0.6);
+            background: rgba(15,23,42,1);
+        }
+
         .row {
             display: flex;
             gap: 12px;
+            margin-top: 6px;
         }
+
         .row > div {
             flex: 1;
         }
+
         button.primary {
-            margin-top: 12px;
+            margin-top: 14px;
             padding: 10px 16px;
-            border-radius: 8px;
+            border-radius: 999px;
             border: none;
-            background: #3b82f6;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
             color: white;
             cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 12px 30px rgba(37,99,235,0.45);
+            transition: transform 0.14s ease-out, box-shadow 0.14s ease-out, filter 0.14s ease-out;
         }
+
+        button.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 40px rgba(37,99,235,0.6);
+            filter: brightness(1.05);
+        }
+
         button.secondary {
-            margin-top: 12px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: none;
-            background: #111827;
-            color: #e5e7eb;
+            margin-top: 10px;
+            padding: 8px 13px;
+            border-radius: 999px;
+            border: 1px solid rgba(31,41,55,0.9);
+            background: rgba(15,23,42,0.95);
+            color: var(--text);
             cursor: pointer;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.14s ease-out;
         }
+
+        button.secondary:hover {
+            border-color: rgba(148,163,184,0.9);
+            background: rgba(15,23,42,1);
+            transform: translateY(-1px);
+        }
+
         .small-row {
             display: flex;
             gap: 8px;
             align-items: center;
             margin-top: 8px;
+            flex-wrap: wrap;
         }
+
         .small-row button {
             padding: 6px 10px;
             border-radius: 999px;
-            border: none;
-            background: #111827;
-            color: #e5e7eb;
+            border: 1px solid rgba(31,41,55,0.9);
+            background: rgba(15,23,42,0.95);
+            color: var(--text);
             cursor: pointer;
             font-size: 12px;
+            transition: all 0.14s ease-out;
         }
+
         .small-row button.active {
-            background: #3b82f6;
+            background: rgba(59,130,246,0.95);
+            border-color: transparent;
+            box-shadow: 0 8px 18px rgba(37,99,235,0.5);
         }
-        ul {
-            margin-top: 8px;
-            padding-left: 18px;
-            font-size: 14px;
-        }
+
         .pill {
-            display: inline-block;
-            padding: 4px 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 9px;
             border-radius: 999px;
-            background: #111827;
+            background: rgba(15,23,42,0.95);
+            border: 1px solid rgba(31,41,55,0.9);
             margin-right: 6px;
             margin-top: 4px;
             font-size: 12px;
+            color: var(--muted);
+            animation: pillIn 0.18s ease-out;
+        }
+
+        .pill span.dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(59,130,246,0.9);
+        }
+
+        @keyframes pillIn {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        hr {
+            margin: 16px 0;
+            border: none;
+            border-top: 1px solid rgba(31,41,55,0.9);
+        }
+
+        .hint {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .danger-text {
+            color: var(--danger);
+            font-size: 12px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .section-header span {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .glow-line {
+            height: 1px;
+            width: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59,130,246,0.7), transparent);
+            opacity: 0.6;
+            margin: 8px 0 12px;
         }
     </style>
 </head>
 <body>
 <header>
     <h1>Origin Admin</h1>
-    <span id="statusText">Loading...</span>
+    <span id="statusText">
+        <span id="statusDot"></span>
+        <span id="statusLabel">Connecting...</span>
+    </span>
 </header>
 
 <div class="container">
     <div class="sidebar">
-        <button class="active" onclick="showSection('antiRaid')">Anti-Raid</button>
-        <button onclick="showSection('tickets')">Tickets</button>
-        <button onclick="showSection('staff')">Staff Points</button>
+        <div class="sidebar-title">Sections</div>
+        <button class="active" onclick="showSection('antiRaid')">
+            <span class="label">
+                <span class="dot"></span>
+                Anti-Raid
+            </span>
+            <span>⚡</span>
+        </button>
+        <button onclick="showSection('tickets')">
+            <span class="label">
+                <span class="dot"></span>
+                Tickets
+            </span>
+            <span>🎫</span>
+        </button>
+        <button onclick="showSection('staff')">
+            <span class="label">
+                <span class="dot"></span>
+                Staff Points
+            </span>
+            <span>👤</span>
+        </button>
     </div>
 
     <div class="content">
         <!-- Anti-Raid -->
-        <div id="section-antiRaid" class="section">
+        <div id="section-antiRaid" class="section active">
             <div class="card">
-                <h2>Anti-Raid Settings</h2>
-
-                <label>Auto Kick Unauthorized Bots</label>
-                <select id="autoKickUnauthorizedBots">
-                    <option value="true">Enabled</option>
-                    <option value="false">Disabled</option>
-                </select>
-
-                <label>Log Unauthorized Bot Add</label>
-                <select id="logUnauthorizedBotAdd">
-                    <option value="true">Enabled</option>
-                    <option value="false">Disabled</option>
-                </select>
-
-                <label>Allowed Bot Adders (Guild Members)</label>
-                <div class="row">
-                    <div>
-                        <select id="memberSelect"></select>
+                <div class="card-inner">
+                    <div class="section-header">
+                        <h2>Anti-Raid Settings <span class="badge">Security</span></h2>
+                        <span>Protect your server from bot raids.</span>
                     </div>
-                    <div style="flex:0 0 140px;">
-                        <button class="secondary" onclick="addAllowedBotAdder()">Add</button>
+                    <div class="glow-line"></div>
+
+                    <label>Auto Kick Unauthorized Bots</label>
+                    <select id="autoKickUnauthorizedBots">
+                        <option value="true">Enabled</option>
+                        <option value="false">Disabled</option>
+                    </select>
+                    <div class="hint">If enabled, any bot added by a non-approved user will be kicked automatically.</div>
+
+                    <label>Log Unauthorized Bot Add</label>
+                    <select id="logUnauthorizedBotAdd">
+                        <option value="true">Enabled</option>
+                        <option value="false">Disabled</option>
+                    </select>
+                    <div class="hint">Logs attempts to add bots by users who are not in the allowed list.</div>
+
+                    <label>Allowed Bot Adders (Guild Members)</label>
+                    <div class="row">
+                        <div>
+                            <select id="memberSelect"></select>
+                        </div>
+                        <div style="flex:0 0 150px;">
+                            <button class="secondary" onclick="addAllowedBotAdder()">+ Add Allowed User</button>
+                        </div>
                     </div>
+                    <div class="hint">Only these users can safely add bots without triggering anti-raid.</div>
+
+                    <div id="allowedBotAddersList"></div>
+
+                    <button class="primary" onclick="saveAntiRaid()">
+                        <span>Save Anti-Raid</span>
+                        <span>💾</span>
+                    </button>
                 </div>
-
-                <div id="allowedBotAddersList"></div>
-
-                <button class="primary" onclick="saveAntiRaid()">Save Anti-Raid</button>
             </div>
         </div>
 
         <!-- Tickets -->
-        <div id="section-tickets" class="section" style="display:none;">
+        <div id="section-tickets" class="section">
             <div class="card">
-                <h2>Ticket Panel</h2>
-
-                <label>Panel Name</label>
-                <input id="ticketPanelName" placeholder="Support Tickets">
-
-                <label>Panel Description</label>
-                <input id="ticketPanelDescription" placeholder="Open a ticket if you need help.">
-
-                <div class="row">
-                    <div>
-                        <label>Ticket Category (Channel)</label>
-                        <select id="ticketCategorySelect"></select>
+                <div class="card-inner">
+                    <div class="section-header">
+                        <h2>Ticket Panel <span class="badge">Support</span></h2>
+                        <span>Configure how users open support tickets.</span>
                     </div>
-                    <div>
-                        <label>Panel Channel (Where button is sent)</label>
-                        <select id="ticketPanelChannelSelect"></select>
+                    <div class="glow-line"></div>
+
+                    <label>Panel Name</label>
+                    <input id="ticketPanelName" placeholder="Support Tickets">
+
+                    <label>Panel Description</label>
+                    <input id="ticketPanelDescription" placeholder="Open a ticket if you need help.">
+                    <div class="hint">Shown above the ticket button in the panel message.</div>
+
+                    <div class="row">
+                        <div>
+                            <label>Ticket Category (Channel)</label>
+                            <select id="ticketCategorySelect"></select>
+                            <div class="hint">Where ticket channels will be created.</div>
+                        </div>
+                        <div>
+                            <label>Panel Channel (Where panel is sent)</label>
+                            <select id="ticketPanelChannelSelect"></select>
+                            <div class="hint">Channel that will receive the ticket panel message.</div>
+                        </div>
                     </div>
+
+                    <div class="row">
+                        <div>
+                            <label>Max Tickets Per User</label>
+                            <input id="ticketMaxPerUser" type="number" min="1" value="3">
+                            <div class="hint">Prevents spam by limiting how many tickets one user can have open.</div>
+                        </div>
+                        <div>
+                            <label>Ping Role on Open</label>
+                            <select id="ticketPingRoleSelect"></select>
+                            <div class="hint">Role that will be pinged when a new ticket is opened.</div>
+                        </div>
+                    </div>
+
+                    <button class="primary" onclick="saveTickets()">
+                        <span>Save Ticket Settings</span>
+                        <span>💾</span>
+                    </button>
+                    <button class="secondary" onclick="deployTicketPanel()">
+                        <span>Deploy Panel</span>
+                        <span>📡</span>
+                    </button>
                 </div>
-
-                <div class="row">
-                    <div>
-                        <label>Max Tickets Per User</label>
-                        <input id="ticketMaxPerUser" type="number" min="1" value="3">
-                    </div>
-                    <div>
-                        <label>Ping Role on Open</label>
-                        <select id="ticketPingRoleSelect"></select>
-                    </div>
-                </div>
-
-                <button class="primary" onclick="saveTickets()">Save Ticket Settings</button>
-                <button class="secondary" onclick="deployTicketPanel()">Deploy Panel</button>
             </div>
         </div>
 
         <!-- Staff Points -->
-        <div id="section-staff" class="section" style="display:none;">
+        <div id="section-staff" class="section">
             <div class="card">
-                <h2>Staff Points</h2>
+                <div class="card-inner">
+                    <div class="section-header">
+                        <h2>Staff Points <span class="badge">Activity</span></h2>
+                        <span>Track and reward staff activity.</span>
+                    </div>
+                    <div class="glow-line"></div>
 
-                <label>Staff Role</label>
-                <select id="staffRoleSelect"></select>
+                    <label>Staff Role</label>
+                    <select id="staffRoleSelect"></select>
+                    <div class="hint">Only members with this role will be tracked for points.</div>
 
-                <label>Required Points</label>
-                <input id="requiredPointsInput" type="number" min="0" value="5">
+                    <label>Required Points</label>
+                    <input id="requiredPointsInput" type="number" min="0" value="5">
+                    <div class="hint">How many points staff should earn in the selected time period.</div>
 
-                <div class="small-row">
-                    <span>Requirement Mode:</span>
-                    <button id="modeDay" onclick="setRequirementMode('day')">Day</button>
-                    <button id="modeWeek" onclick="setRequirementMode('week')">Week</button>
-                    <button id="modeMonth" onclick="setRequirementMode('month')">Month</button>
+                    <div class="small-row">
+                        <span>Requirement Mode:</span>
+                        <button id="modeDay" onclick="setRequirementMode('day')">Day</button>
+                        <button id="modeWeek" onclick="setRequirementMode('week')">Week</button>
+                        <button id="modeMonth" onclick="setRequirementMode('month')">Month</button>
+                    </div>
+
+                    <hr>
+
+                    <label>Add Points to Staff Member</label>
+                    <div class="row">
+                        <div>
+                            <select id="staffMemberSelect"></select>
+                        </div>
+                        <div>
+                            <input id="staffPointsToAdd" type="number" min="1" value="1">
+                        </div>
+                        <div style="flex:0 0 150px;">
+                            <button class="secondary" onclick="addStaffPoints()">+ Add Points</button>
+                        </div>
+                    </div>
+                    <div class="hint">Only trusted users with access to this panel can modify points.</div>
+
+                    <label>Current Staff Points</label>
+                    <div id="staffPointsList"></div>
+
+                    <button class="primary" onclick="saveStaffSettings()">
+                        <span>Save Staff Settings</span>
+                        <span>💾</span>
+                    </button>
                 </div>
-
-                <hr style="margin:16px 0;border-color:#1f2937;">
-
-                <label>Add Points to Staff Member</label>
-                <div class="row">
-                    <div>
-                        <select id="staffMemberSelect"></select>
-                    </div>
-                    <div>
-                        <input id="staffPointsToAdd" type="number" min="1" value="1">
-                    </div>
-                    <div style="flex:0 0 140px;">
-                        <button class="secondary" onclick="addStaffPoints()">Add Points</button>
-                    </div>
-                </div>
-
-                <label>Current Staff Points</label>
-                <div id="staffPointsList"></div>
-
-                <button class="primary" onclick="saveStaffSettings()">Save Staff Settings</button>
             </div>
         </div>
     </div>
@@ -264,35 +589,57 @@ let members = [];
 let roles = [];
 let channels = [];
 
-function showSection(name) {
-    document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
-    document.getElementById("section-" + name).style.display = "block";
+function setStatus(connected) {
+    const dot = document.getElementById("statusDot");
+    const label = document.getElementById("statusLabel");
+    if (connected) {
+        dot.style.background = "#22c55e";
+        dot.style.boxShadow = "0 0 10px rgba(34,197,94,0.7)";
+        label.textContent = "Connected";
+    } else {
+        dot.style.background = "#f97316";
+        dot.style.boxShadow = "0 0 10px rgba(249,115,22,0.7)";
+        label.textContent = "Connecting...";
+    }
+}
 
-    document.querySelectorAll(".sidebar button").forEach(btn => btn.classList.remove("active"));
-    if (name === "antiRaid") document.querySelectorAll(".sidebar button")[0].classList.add("active");
-    if (name === "tickets") document.querySelectorAll(".sidebar button")[1].classList.add("active");
-    if (name === "staff") document.querySelectorAll(".sidebar button")[2].classList.add("active");
+function showSection(name) {
+    document.querySelectorAll(".section").forEach(sec => {
+        sec.classList.remove("active");
+    });
+    document.getElementById("section-" + name).classList.add("active");
+
+    const buttons = document.querySelectorAll(".sidebar button");
+    buttons.forEach(btn => btn.classList.remove("active"));
+    if (name === "antiRaid") buttons[0].classList.add("active");
+    if (name === "tickets") buttons[1].classList.add("active");
+    if (name === "staff") buttons[2].classList.add("active");
 }
 
 async function loadAll() {
-    document.getElementById("statusText").innerText = "Loading...";
-    const cfgRes = await fetch("/api/config");
-    config = await cfgRes.json();
+    try {
+        setStatus(false);
+        const cfgRes = await fetch("/api/config");
+        config = await cfgRes.json();
 
-    const memRes = await fetch("/api/members");
-    members = await memRes.json();
+        const memRes = await fetch("/api/members");
+        members = await memRes.json();
 
-    const roleRes = await fetch("/api/roles");
-    roles = await roleRes.json();
+        const roleRes = await fetch("/api/roles");
+        roles = await roleRes.json();
 
-    const chanRes = await fetch("/api/channels");
-    channels = await chanRes.json();
+        const chanRes = await fetch("/api/channels");
+        channels = await chanRes.json();
 
-    populateAntiRaid();
-    populateTickets();
-    populateStaff();
+        populateAntiRaid();
+        populateTickets();
+        populateStaff();
 
-    document.getElementById("statusText").innerText = "Connected";
+        setStatus(true);
+    } catch (e) {
+        console.error(e);
+        setStatus(false);
+    }
 }
 
 function populateAntiRaid() {
@@ -323,7 +670,12 @@ function renderAllowedBotAdders() {
         const label = member ? `${member.username} (${member.tag})` : id;
         const pill = document.createElement("span");
         pill.className = "pill";
-        pill.textContent = label;
+        const dot = document.createElement("span");
+        dot.className = "dot";
+        pill.appendChild(dot);
+        const text = document.createElement("span");
+        text.textContent = label;
+        pill.appendChild(text);
         container.appendChild(pill);
     });
 }
@@ -457,7 +809,12 @@ function renderStaffPoints() {
         const label = member ? `${member.username} (${member.tag})` : id;
         const pill = document.createElement("span");
         pill.className = "pill";
-        pill.textContent = `${label}: ${map[id]} pts`;
+        const dot = document.createElement("span");
+        dot.className = "dot";
+        pill.appendChild(dot);
+        const text = document.createElement("span");
+        text.textContent = `${label}: ${map[id]} pts`;
+        pill.appendChild(text);
         container.appendChild(pill);
     });
 }
