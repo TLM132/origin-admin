@@ -6,44 +6,41 @@
     <style>
         :root {
             --bg: #020617;
-            --bg-alt: #0b1120;
-            --card: #020617;
-            --border: #1f2937;
+            --card: #0f172a;
+            --border: #1e293b;
             --accent: #3b82f6;
-            --accent-soft: rgba(59,130,246,0.15);
+            --accent2: #2563eb;
             --text: #e5e7eb;
-            --muted: #9ca3af;
-            --danger: #ef4444;
+            --muted: #94a3b8;
         }
 
         * { box-sizing: border-box; }
 
         body {
             margin: 0;
-            background: radial-gradient(circle at top, #1e293b 0, #020617 45%, #000 100%);
+            background: var(--bg);
             color: var(--text);
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-family: system-ui, sans-serif;
             overflow-x: hidden;
         }
 
         header {
+            position: fixed;
+            top: 0;
+            width: 100%;
             padding: 16px 24px;
-            background: linear-gradient(90deg, #020617, #0b1120);
+            background: rgba(2,6,23,0.85);
+            backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: fixed;
-            top: 0;
-            width: 100%;
             z-index: 50;
-            backdrop-filter: blur(12px);
         }
 
         header h1 {
             margin: 0;
             font-size: 20px;
-            letter-spacing: 0.04em;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -54,7 +51,7 @@
             width: 18px;
             height: 18px;
             border-radius: 999px;
-            background: radial-gradient(circle, #3b82f6, #1d4ed8);
+            background: radial-gradient(circle, var(--accent), var(--accent2));
             box-shadow: 0 0 18px rgba(59,130,246,0.7);
         }
 
@@ -74,7 +71,6 @@
             height: 8px;
             border-radius: 999px;
             background: #f97316;
-            box-shadow: 0 0 10px rgba(249,115,22,0.7);
         }
 
         /* Layout */
@@ -102,23 +98,20 @@
 
         .sidebar button {
             width: 100%;
-            padding: 10px 12px;
-            margin-bottom: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
             border-radius: 10px;
-            border: 1px solid rgba(31,41,55,0.9);
+            border: 1px solid var(--border);
             background: rgba(15,23,42,0.9);
             color: var(--text);
-            text-align: left;
             cursor: pointer;
             font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            text-align: left;
             transition: all 0.18s ease-out;
         }
 
         .sidebar button.active {
-            background: linear-gradient(135deg, rgba(37,99,235,0.9), rgba(59,130,246,0.9));
+            background: linear-gradient(135deg, var(--accent2), var(--accent));
             border-color: transparent;
             box-shadow: 0 10px 25px rgba(37,99,235,0.35);
         }
@@ -126,15 +119,6 @@
         .content {
             margin-left: 260px;
             width: calc(100% - 260px);
-            scroll-behavior: smooth;
-        }
-
-        /* Scroll snapping */
-        .section {
-            height: 100vh;
-            padding: 30px;
-            scroll-snap-align: start;
-            overflow-y: auto;
         }
 
         .sections {
@@ -143,48 +127,83 @@
             overflow-y: scroll;
         }
 
+        .section {
+            height: 90vh;
+            padding: 40px;
+            scroll-snap-align: start;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
         .card {
-            background: radial-gradient(circle at top left, rgba(30,64,175,0.35), rgba(15,23,42,0.95));
-            border-radius: 14px;
-            padding: 18px 20px;
-            margin-bottom: 18px;
-            border: 1px solid rgba(31,41,55,0.9);
-            box-shadow: 0 18px 40px rgba(15,23,42,0.9);
+            width: 90%;
+            background: var(--card);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 18px 40px rgba(0,0,0,0.4);
         }
 
         .glow-line {
             height: 1px;
             width: 100%;
-            background: linear-gradient(90deg, transparent, rgba(59,130,246,0.7), transparent);
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
             opacity: 0.6;
-            margin: 8px 0 12px;
+            margin: 12px 0 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        select, input {
+            margin-top: 6px;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #0f172a;
+            color: var(--text);
+            width: 100%;
+            font-size: 14px;
+        }
+
+        button.action {
+            margin-top: 16px;
+            padding: 12px 18px;
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(135deg, var(--accent2), var(--accent));
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 12px 30px rgba(37,99,235,0.45);
         }
 
         .pill {
             display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 9px;
+            padding: 6px 12px;
             border-radius: 999px;
-            background: rgba(15,23,42,0.95);
-            border: 1px solid rgba(31,41,55,0.9);
-            margin-right: 6px;
-            margin-top: 4px;
-            font-size: 12px;
-            color: var(--muted);
+            background: #1e293b;
+            border: 1px solid var(--border);
+            margin: 4px;
+            font-size: 13px;
         }
 
         #logsContainer {
-            max-height: 70vh;
+            max-height: 60vh;
             overflow-y: auto;
         }
 
         .log-entry {
-            background: rgba(15,23,42,0.85);
-            border: 1px solid rgba(31,41,55,0.9);
-            padding: 8px 12px;
-            border-radius: 8px;
-            margin-bottom: 6px;
+            background: #1e293b;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
             font-size: 13px;
         }
     </style>
@@ -218,24 +237,18 @@
                     <div class="glow-line"></div>
 
                     <label>Auto Kick Unauthorized Bots</label>
-                    <select id="autoKickUnauthorizedBots">
-                        <option value="true">Enabled</option>
-                        <option value="false">Disabled</option>
-                    </select>
+                    <select id="autoKickUnauthorizedBots"></select>
 
                     <label>Log Unauthorized Bot Add</label>
-                    <select id="logUnauthorizedBotAdd">
-                        <option value="true">Enabled</option>
-                        <option value="false">Disabled</option>
-                    </select>
+                    <select id="logUnauthorizedBotAdd"></select>
 
                     <label>Allowed Bot Adders</label>
                     <select id="memberSelect"></select>
-                    <button onclick="addAllowedBotAdder()">Add</button>
+                    <button class="action" onclick="addAllowedBotAdder()">Add</button>
 
                     <div id="allowedBotAddersList"></div>
 
-                    <button onclick="saveAntiRaid()">Save Anti-Raid</button>
+                    <button class="action" onclick="saveAntiRaid()">Save Anti-Raid</button>
                 </div>
             </div>
 
@@ -263,8 +276,8 @@
                     <label>Ping Role</label>
                     <select id="ticketPingRoleSelect"></select>
 
-                    <button onclick="saveTickets()">Save Ticket Settings</button>
-                    <button onclick="deployTicketPanel()">Deploy Panel</button>
+                    <button class="action" onclick="saveTickets()">Save Ticket Settings</button>
+                    <button class="action" onclick="deployTicketPanel()">Deploy Panel</button>
                 </div>
             </div>
 
@@ -283,11 +296,11 @@
                     <label>Add Points</label>
                     <select id="staffMemberSelect"></select>
                     <input id="staffPointsToAdd" type="number">
-                    <button onclick="addStaffPoints()">Add Points</button>
+                    <button class="action" onclick="addStaffPoints()">Add Points</button>
 
                     <div id="staffPointsList"></div>
 
-                    <button onclick="saveStaffSettings()">Save Staff Settings</button>
+                    <button class="action" onclick="saveStaffSettings()">Save Staff Settings</button>
                 </div>
             </div>
 
@@ -296,7 +309,6 @@
                 <div class="card">
                     <h2>Logs</h2>
                     <div class="glow-line"></div>
-
                     <div id="logsContainer"></div>
                 </div>
             </div>
@@ -386,11 +398,20 @@ async function loadAll() {
 }
 
 function populateAntiRaid() {
-    document.getElementById("autoKickUnauthorizedBots").value =
-        String(config.antiRaid.autoKickUnauthorizedBots);
+    const autoKick = document.getElementById("autoKickUnauthorizedBots");
+    const logAdd = document.getElementById("logUnauthorizedBotAdd");
 
-    document.getElementById("logUnauthorizedBotAdd").value =
-        String(config.antiRaid.logUnauthorizedBotAdd);
+    autoKick.innerHTML = `
+        <option value="true">Enabled</option>
+        <option value="false">Disabled</option>
+    `;
+    logAdd.innerHTML = `
+        <option value="true">Enabled</option>
+        <option value="false">Disabled</option>
+    `;
+
+    autoKick.value = String(config.antiRaid.autoKickUnauthorizedBots);
+    logAdd.value = String(config.antiRaid.logUnauthorizedBotAdd);
 
     const memberSelect = document.getElementById("memberSelect");
     memberSelect.innerHTML = "";
@@ -549,4 +570,5 @@ function renderStaffPoints() {
     });
 }
 
-async function add
+async function addStaffPoints() {
+    const userId = document
