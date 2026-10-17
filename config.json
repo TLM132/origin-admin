@@ -1,0 +1,32 @@
+{
+    "botName": "Origin SMP Bot",
+    "guildId": "1560577019136450570",
+    "ownerId": "1503231776074764288",
+
+    "antiRaid": {
+        "autoKickUnauthorizedBots": false,
+        "logUnauthorizedBotAdd": true,
+        "allowedBotAdders": []
+    },
+
+    "tickets": {
+        "panelName": "Support Tickets",
+        "panelDescription": "Open a ticket if you need help.",
+        "categoryId": "",
+        "maxPerUser": 3,
+        "pingRoleId": "",
+        "panelChannelId": ""
+    },
+
+    "staffPoints": {
+        "requirementMode": "day",
+        "requiredPoints": 5,
+        "staffRoleId": "",
+        "members": {}
+    },
+
+    "dashboard": {
+        "url": "https://originadmin.fps.ms",
+        "allowedUsers": []
+    }
+}

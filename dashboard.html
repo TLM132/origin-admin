@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Origin Admin</title>
+    <style>
+        body {
+            background: #0f172a;
+            color: #e5e7eb;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            margin: 0;
+        }
+        header {
+            padding: 16px 24px;
+            background: #020617;
+            border-bottom: 1px solid #1f2937;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+        .container {
+            padding: 24px;
+            display: flex;
+            gap: 16px;
+        }
+        .sidebar {
+            width: 220px;
+        }
+        .sidebar button {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border: none;
+            background: #1f2937;
+            color: #e5e7eb;
+            text-align: left;
+            cursor: pointer;
+        }
+        .sidebar button.active {
+            background: #3b82f6;
+        }
+        .content {
+            flex: 1;
+        }
+        .card {
+            background: #020617;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            border: 1px solid #1f2937;
+        }
+        .card h2 {
+            margin-top: 0;
+            font-size: 18px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        select, input {
+            margin-top: 4px;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #374151;
+            background: #0b1120;
+            color: #e5e7eb;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .row {
+            display: flex;
+            gap: 12px;
+        }
+        .row > div {
+            flex: 1;
+        }
+        button.primary {
+            margin-top: 12px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: none;
+            background: #3b82f6;
+            color: white;
+            cursor: pointer;
+        }
+        button.secondary {
+            margin-top: 12px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: none;
+            background: #111827;
+            color: #e5e7eb;
+            cursor: pointer;
+        }
+        .small-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 8px;
+        }
+        .small-row button {
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: none;
+            background: #111827;
+            color: #e5e7eb;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .small-row button.active {
+            background: #3b82f6;
+        }
+        ul {
+            margin-top: 8px;
+            padding-left: 18px;
+            font-size: 14px;
+        }
+        .pill {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: #111827;
+            margin-right: 6px;
+            margin-top: 4px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Origin Admin</h1>
+    <span id="statusText">Loading...</span>
+</header>
+
+<div class="container">
+    <div class="sidebar">
+        <button class="active" onclick="showSection('antiRaid')">Anti-Raid</button>
+        <button onclick="showSection('tickets')">Tickets</button>
+        <button onclick="showSection('staff')">Staff Points</button>
+    </div>
+
+    <div class="content">
+        <!-- Anti-Raid -->
+        <div id="section-antiRaid" class="section">
+            <div class="card">
+                <h2>Anti-Raid Settings</h2>
+
+                <label>Auto Kick Unauthorized Bots</label>
+                <select id="autoKickUnauthorizedBots">
+                    <option value="true">Enabled</option>
+                    <option value="false">Disabled</option>
+                </select>
+
+                <label>Log Unauthorized Bot Add</label>
+                <select id="logUnauthorizedBotAdd">
+                    <option value="true">Enabled</option>
+                    <option value="false">Disabled</option>
+                </select>
+
+                <label>Allowed Bot Adders (Guild Members)</label>
+                <div class="row">
+                    <div>
+                        <select id="memberSelect"></select>
+                    </div>
+                    <div style="flex:0 0 140px;">
+                        <button class="secondary" onclick="addAllowedBotAdder()">Add</button>
+                    </div>
+                </div>
+
+                <div id="allowedBotAddersList"></div>
+
+                <button class="primary" onclick="saveAntiRaid()">Save Anti-Raid</button>
+            </div>
+        </div>
+
+        <!-- Tickets -->
+        <div id="section-tickets" class="section" style="display:none;">
+            <div class="card">
+                <h2>Ticket Panel</h2>
+
+                <label>Panel Name</label>
+                <input id="ticketPanelName" placeholder="Support Tickets">
+
+                <label>Panel Description</label>
+                <input id="ticketPanelDescription" placeholder="Open a ticket if you need help.">
+
+                <div class="row">
+                    <div>
+                        <label>Ticket Category (Channel)</label>
+                        <select id="ticketCategorySelect"></select>
+                    </div>
+                    <div>
+                        <label>Panel Channel (Where button is sent)</label>
+                        <select id="ticketPanelChannelSelect"></select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div>
+                        <label>Max Tickets Per User</label>
+                        <input id="ticketMaxPerUser" type="number" min="1" value="3">
+                    </div>
+                    <div>
+                        <label>Ping Role on Open</label>
+                        <select id="ticketPingRoleSelect"></select>
+                    </div>
+                </div>
+
+                <button class="primary" onclick="saveTickets()">Save Ticket Settings</button>
+                <button class="secondary" onclick="deployTicketPanel()">Deploy Panel</button>
+            </div>
+        </div>
+
+        <!-- Staff Points -->
+        <div id="section-staff" class="section" style="display:none;">
+            <div class="card">
+                <h2>Staff Points</h2>
+
+                <label>Staff Role</label>
+                <select id="staffRoleSelect"></select>
+
+                <label>Required Points</label>
+                <input id="requiredPointsInput" type="number" min="0" value="5">
+
+                <div class="small-row">
+                    <span>Requirement Mode:</span>
+                    <button id="modeDay" onclick="setRequirementMode('day')">Day</button>
+                    <button id="modeWeek" onclick="setRequirementMode('week')">Week</button>
+                    <button id="modeMonth" onclick="setRequirementMode('month')">Month</button>
+                </div>
+
+                <hr style="margin:16px 0;border-color:#1f2937;">
+
+                <label>Add Points to Staff Member</label>
+                <div class="row">
+                    <div>
+                        <select id="staffMemberSelect"></select>
+                    </div>
+                    <div>
+                        <input id="staffPointsToAdd" type="number" min="1" value="1">
+                    </div>
+                    <div style="flex:0 0 140px;">
+                        <button class="secondary" onclick="addStaffPoints()">Add Points</button>
+                    </div>
+                </div>
+
+                <label>Current Staff Points</label>
+                <div id="staffPointsList"></div>
+
+                <button class="primary" onclick="saveStaffSettings()">Save Staff Settings</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let config = null;
+let members = [];
+let roles = [];
+let channels = [];
+
+function showSection(name) {
+    document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
+    document.getElementById("section-" + name).style.display = "block";
+
+    document.querySelectorAll(".sidebar button").forEach(btn => btn.classList.remove("active"));
+    if (name === "antiRaid") document.querySelectorAll(".sidebar button")[0].classList.add("active");
+    if (name === "tickets") document.querySelectorAll(".sidebar button")[1].classList.add("active");
+    if (name === "staff") document.querySelectorAll(".sidebar button")[2].classList.add("active");
+}
+
+async function loadAll() {
+    document.getElementById("statusText").innerText = "Loading...";
+    const cfgRes = await fetch("/api/config");
+    config = await cfgRes.json();
+
+    const memRes = await fetch("/api/members");
+    members = await memRes.json();
+
+    const roleRes = await fetch("/api/roles");
+    roles = await roleRes.json();
+
+    const chanRes = await fetch("/api/channels");
+    channels = await chanRes.json();
+
+    populateAntiRaid();
+    populateTickets();
+    populateStaff();
+
+    document.getElementById("statusText").innerText = "Connected";
+}
+
+function populateAntiRaid() {
+    document.getElementById("autoKickUnauthorizedBots").value =
+        String(config.antiRaid.autoKickUnauthorizedBots);
+    document.getElementById("logUnauthorizedBotAdd").value =
+        String(config.antiRaid.logUnauthorizedBotAdd);
+
+    const memberSelect = document.getElementById("memberSelect");
+    memberSelect.innerHTML = "";
+    members.forEach(m => {
+        const opt = document.createElement("option");
+        opt.value = m.id;
+        opt.textContent = `${m.username} (${m.tag})`;
+        memberSelect.appendChild(opt);
+    });
+
+    renderAllowedBotAdders();
+}
+
+function renderAllowedBotAdders() {
+    const container = document.getElementById("allowedBotAddersList");
+    container.innerHTML = "";
+    if (!config.antiRaid.allowedBotAdders) config.antiRaid.allowedBotAdders = [];
+
+    config.antiRaid.allowedBotAdders.forEach(id => {
+        const member = members.find(m => m.id === id);
+        const label = member ? `${member.username} (${member.tag})` : id;
+        const pill = document.createElement("span");
+        pill.className = "pill";
+        pill.textContent = label;
+        container.appendChild(pill);
+    });
+}
+
+function addAllowedBotAdder() {
+    const id = document.getElementById("memberSelect").value;
+    if (!id) return;
+    if (!config.antiRaid.allowedBotAdders.includes(id)) {
+        config.antiRaid.allowedBotAdders.push(id);
+        renderAllowedBotAdders();
+    }
+}
+
+async function saveAntiRaid() {
+    config.antiRaid.autoKickUnauthorizedBots =
+        document.getElementById("autoKickUnauthorizedBots").value === "true";
+    config.antiRaid.logUnauthorizedBotAdd =
+        document.getElementById("logUnauthorizedBotAdd").value === "true";
+
+    await fetch("/api/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(config)
+    });
+    alert("Anti-Raid settings saved.");
+}
+
+function populateTickets() {
+    document.getElementById("ticketPanelName").value = config.tickets.panelName || "";
+    document.getElementById("ticketPanelDescription").value = config.tickets.panelDescription || "";
+    document.getElementById("ticketMaxPerUser").value = config.tickets.maxPerUser || 3;
+
+    const catSelect = document.getElementById("ticketCategorySelect");
+    const panelChanSelect = document.getElementById("ticketPanelChannelSelect");
+    catSelect.innerHTML = "";
+    panelChanSelect.innerHTML = "";
+
+    channels.forEach(c => {
+        const opt1 = document.createElement("option");
+        opt1.value = c.id;
+        opt1.textContent = c.name;
+        catSelect.appendChild(opt1);
+
+        const opt2 = document.createElement("option");
+        opt2.value = c.id;
+        opt2.textContent = c.name;
+        panelChanSelect.appendChild(opt2);
+    });
+
+    if (config.tickets.categoryId) catSelect.value = config.tickets.categoryId;
+    if (config.tickets.panelChannelId) panelChanSelect.value = config.tickets.panelChannelId;
+
+    const pingRoleSelect = document.getElementById("ticketPingRoleSelect");
+    pingRoleSelect.innerHTML = "";
+    roles.forEach(r => {
+        const opt = document.createElement("option");
+        opt.value = r.id;
+        opt.textContent = r.name;
+        pingRoleSelect.appendChild(opt);
+    });
+    if (config.tickets.pingRoleId) pingRoleSelect.value = config.tickets.pingRoleId;
+}
+
+async function saveTickets() {
+    config.tickets.panelName = document.getElementById("ticketPanelName").value;
+    config.tickets.panelDescription = document.getElementById("ticketPanelDescription").value;
+    config.tickets.categoryId = document.getElementById("ticketCategorySelect").value;
+    config.tickets.panelChannelId = document.getElementById("ticketPanelChannelSelect").value;
+    config.tickets.maxPerUser = Number(document.getElementById("ticketMaxPerUser").value) || 1;
+    config.tickets.pingRoleId = document.getElementById("ticketPingRoleSelect").value;
+
+    await fetch("/api/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(config)
+    });
+    alert("Ticket settings saved.");
+}
+
+async function deployTicketPanel() {
+    const res = await fetch("/api/deployTicketPanel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+    });
+    const data = await res.json();
+    if (data.status === "deployed") {
+        alert("Ticket panel deployed.");
+    } else {
+        alert("Error deploying panel: " + (data.error || "unknown"));
+    }
+}
+
+function populateStaff() {
+    const staffRoleSelect = document.getElementById("staffRoleSelect");
+    staffRoleSelect.innerHTML = "";
+    roles.forEach(r => {
+        const opt = document.createElement("option");
+        opt.value = r.id;
+        opt.textContent = r.name;
+        staffRoleSelect.appendChild(opt);
+    });
+    if (config.staffPoints.staffRoleId) staffRoleSelect.value = config.staffPoints.staffRoleId;
+
+    document.getElementById("requiredPointsInput").value = config.staffPoints.requiredPoints || 0;
+
+    document.getElementById("modeDay").classList.remove("active");
+    document.getElementById("modeWeek").classList.remove("active");
+    document.getElementById("modeMonth").classList.remove("active");
+    if (config.staffPoints.requirementMode === "day") document.getElementById("modeDay").classList.add("active");
+    if (config.staffPoints.requirementMode === "week") document.getElementById("modeWeek").classList.add("active");
+    if (config.staffPoints.requirementMode === "month") document.getElementById("modeMonth").classList.add("active");
+
+    const staffMemberSelect = document.getElementById("staffMemberSelect");
+    staffMemberSelect.innerHTML = "";
+    members.forEach(m => {
+        const opt = document.createElement("option");
+        opt.value = m.id;
+        opt.textContent = `${m.username} (${m.tag})`;
+        staffMemberSelect.appendChild(opt);
+    });
+
+    renderStaffPoints();
+}
+
+function renderStaffPoints() {
+    const container = document.getElementById("staffPointsList");
+    container.innerHTML = "";
+    const map = config.staffPoints.members || {};
+    Object.keys(map).forEach(id => {
+        const member = members.find(m => m.id === id);
+        const label = member ? `${member.username} (${member.tag})` : id;
+        const pill = document.createElement("span");
+        pill.className = "pill";
+        pill.textContent = `${label}: ${map[id]} pts`;
+        container.appendChild(pill);
+    });
+}
+
+async function setRequirementMode(mode) {
+    await fetch("/api/setRequirementMode", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode })
+    });
+    config.staffPoints.requirementMode = mode;
+    populateStaff();
+}
+
+async function addStaffPoints() {
+    const userId = document.getElementById("staffMemberSelect").value;
+    const points = Number(document.getElementById("staffPointsToAdd").value) || 0;
+    if (!userId || points <= 0) return;
+
+    const res = await fetch("/api/addStaffPoints", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, points })
+    });
+    const data = await res.json();
+    if (!config.staffPoints.members) config.staffPoints.members = {};
+    config.staffPoints.members[userId] = data.total;
+    renderStaffPoints();
+}
+
+async function saveStaffSettings() {
+    config.staffPoints.staffRoleId = document.getElementById("staffRoleSelect").value;
+    config.staffPoints.requiredPoints = Number(document.getElementById("requiredPointsInput").value) || 0;
+
+    await fetch("/api/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(config)
+    });
+    alert("Staff settings saved.");
+}
+
+loadAll();
+</script>
+</body>
+</html>
