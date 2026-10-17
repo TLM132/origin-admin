@@ -26,7 +26,7 @@
     },
 
     "dashboard": {
-        "url": "https://originadmin.fps.ms",
+        "url": "https://origin-admin.onrender.com",
         "allowedUsers": []
     }
 }
