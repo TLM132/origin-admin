@@ -237,10 +237,16 @@
                     <div class="glow-line"></div>
 
                     <label>Auto Kick Unauthorized Bots</label>
-                    <select id="autoKickUnauthorizedBots"></select>
+                    <select id="autoKickUnauthorizedBots">
+                        <option value="true">Enabled</option>
+                        <option value="false">Disabled</option>
+                    </select>
 
                     <label>Log Unauthorized Bot Add</label>
-                    <select id="logUnauthorizedBotAdd"></select>
+                    <select id="logUnauthorizedBotAdd">
+                        <option value="true">Enabled</option>
+                        <option value="false">Disabled</option>
+                    </select>
 
                     <label>Allowed Bot Adders</label>
                     <select id="memberSelect"></select>
@@ -398,20 +404,11 @@ async function loadAll() {
 }
 
 function populateAntiRaid() {
-    const autoKick = document.getElementById("autoKickUnauthorizedBots");
-    const logAdd = document.getElementById("logUnauthorizedBotAdd");
+    document.getElementById("autoKickUnauthorizedBots").value =
+        String(config.antiRaid.autoKickUnauthorizedBots);
 
-    autoKick.innerHTML = `
-        <option value="true">Enabled</option>
-        <option value="false">Disabled</option>
-    `;
-    logAdd.innerHTML = `
-        <option value="true">Enabled</option>
-        <option value="false">Disabled</option>
-    `;
-
-    autoKick.value = String(config.antiRaid.autoKickUnauthorizedBots);
-    logAdd.value = String(config.antiRaid.logUnauthorizedBotAdd);
+    document.getElementById("logUnauthorizedBotAdd").value =
+        String(config.antiRaid.logUnauthorizedBotAdd);
 
     const memberSelect = document.getElementById("memberSelect");
     memberSelect.innerHTML = "";
@@ -571,4 +568,25 @@ function renderStaffPoints() {
 }
 
 async function addStaffPoints() {
-    const userId = document
+    const userId = document.getElementById("staffMemberSelect").value;
+    const points = Number(document.getElementById("staffPointsToAdd").value);
+
+    if (!userId || points <= 0) return;
+
+    const res = await fetch("/api/addStaffPoints", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, points })
+    });
+
+    const data = await res.json();
+
+    if (!config.staffPoints.members)
+        config.staffPoints.members = {};
+
+    config.staffPoints.members[userId] = data.total;
+
+    renderStaffPoints();
+    logEvent(`Added ${points} points to ${userId}.`);
+}
+
