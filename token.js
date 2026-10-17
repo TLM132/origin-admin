@@ -1,3 +1,3 @@
 module.exports = {
-    token: "YALL ARENT GETTING IT"
+    token: process.env.TOKEN
 };
